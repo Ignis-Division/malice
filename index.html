@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Malice — Devil's Den Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #080608;
+  --surface:  #100c10;
+  --panel:    #160f16;
+  --border:   rgba(180,20,20,0.15);
+  --red:      #cc2020;
+  --red2:     #ff3030;
+  --dim:      #4a2a2a;
+  --muted:    rgba(255,255,255,0.3);
+  --text:     rgba(255,255,255,0.85);
+  --soft:     rgba(255,255,255,0.45);
+  --blood:    #cc2020;
+  --hex:      #6622cc;
+  --void:     #0a0a0a;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+}
+
+/* ── PAGES ── */
+.page { display: none; min-height: 100vh; }
+.page.active { display: flex; flex-direction: column; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+  height: 56px;
+  background: rgba(8,6,8,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+}
+.nav-logo img { width: 28px; height: 28px; object-fit: contain; }
+.nav-logo span {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+  color: var(--red2);
+}
+.nav-links { display: flex; gap: 4px; }
+.nav-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 2px;
+  border: none;
+  background: transparent;
+  color: var(--soft);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-link.active { color: var(--red2); background: rgba(204,32,32,0.08); }
+
+/* ── PAGE WRAPPER ── */
+.page-inner {
+  padding: 88px 32px 48px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
+}
+
+/* ── HOME PAGE ── */
+.home-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  min-height: calc(100vh - 56px);
+  padding: 88px 32px 48px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.hero-left {}
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 16px;
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 8vw, 7rem);
+  line-height: 0.9;
+  letter-spacing: 0.05em;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.hero-title span { color: var(--red2); }
+.hero-sub {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: var(--dim);
+  margin-bottom: 24px;
+}
+.hero-desc {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--soft);
+  line-height: 1.7;
+  margin-bottom: 36px;
+  max-width: 400px;
+}
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-primary {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--red2); transform: translateY(-1px); }
+.btn-secondary {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 11px 24px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, transform 0.15s;
+}
+.btn-secondary:hover { border-color: rgba(255,255,255,0.25); color: var(--text); transform: translateY(-1px); }
+
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.currency-pill {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px 20px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.currency-pill:hover { border-color: rgba(204,32,32,0.3); transform: translateX(4px); }
+.currency-pill img { width: 36px; height: 36px; object-fit: contain; }
+.currency-pill-info {}
+.currency-pill-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  color: #fff;
+}
+.currency-pill-desc {
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: var(--soft);
+}
+.currency-pill.blood { border-left: 2px solid var(--blood); }
+.currency-pill.hex   { border-left: 2px solid var(--hex); }
+.currency-pill.void  { border-left: 2px solid #333; }
+
+/* ── FEATURES PAGE ── */
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: 0.06em;
+  color: #fff;
+  margin-bottom: 32px;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 48px;
+}
+.feature-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 24px 20px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.feature-card:hover { border-color: rgba(204,32,32,0.3); transform: translateY(-2px); }
+.feature-icon { font-size: 1.4rem; margin-bottom: 12px; display: block; }
+.feature-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.feature-desc {
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: var(--soft);
+  line-height: 1.6;
+}
+
+.tiers-list { display: flex; flex-direction: column; gap: 0; }
+.tier-row {
+  display: grid;
+  grid-template-columns: 40px 160px 1fr 120px;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.tier-row:first-child { border-top: 1px solid rgba(255,255,255,0.04); }
+.tier-emoji { font-size: 1.2rem; text-align: center; }
+.tier-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+.tier-req { font-size: 0.8rem; color: var(--soft); }
+.tier-bonus {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--red);
+  text-align: right;
+}
+
+/* ── COMMANDS PAGE ── */
+.cmd-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.cmd-tab {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cmd-tab:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+.cmd-tab.active { background: rgba(204,32,32,0.1); border-color: rgba(204,32,32,0.3); color: var(--red2); }
+
+.cmd-panel { display: none; }
+.cmd-panel.active { display: block; }
+
+.cmd-list { display: flex; flex-direction: column; gap: 8px; }
+.cmd-row {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  align-items: start;
+  transition: border-color 0.15s;
+}
+.cmd-row:hover { border-color: rgba(204,32,32,0.25); }
+.cmd-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #ff6060;
+}
+.cmd-name::before { content: '/'; color: var(--dim); }
+.cmd-badge {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-left: 8px;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+.badge-admin { background: rgba(204,32,32,0.12); color: var(--red); border: 1px solid rgba(204,32,32,0.2); }
+.badge-nsfw  { background: rgba(80,0,0,0.3); color: #cc4444; border: 1px solid rgba(120,0,0,0.3); }
+.badge-rare  { background: rgba(60,10,80,0.3); color: #aa44cc; border: 1px solid rgba(80,20,100,0.4); }
+.cmd-desc { font-size: 0.85rem; color: var(--soft); line-height: 1.6; }
+.cmd-desc strong { color: var(--text); font-weight: 500; }
+.cmd-note {
+  margin-top: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--dim);
+}
+
+/* ── FORGE SECTION ── */
+.forge-box {
+  background: linear-gradient(135deg, #0f0810, #080608);
+  border: 1px solid rgba(102,34,204,0.2);
+  border-radius: 4px;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.forge-token {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.forge-token img {
+  width: 48px; height: 48px; object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(150,50,200,0.3));
+}
+.forge-token-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: 0.1em;
+  color: var(--soft); text-transform: uppercase;
+}
+.forge-op {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem; color: var(--dim);
+}
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 40px 0;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-left {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.footer-right {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--dim);
+}
+
+/* ── ANIMATIONS ── */
+.fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 720px) {
+  .home-hero { grid-template-columns: 1fr; min-height: auto; padding-top: 88px; }
+  .hero-right { display: none; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .cmd-row { grid-template-columns: 1fr; }
+  .tier-row { grid-template-columns: 36px 1fr; }
+  .tier-req, .tier-bonus { grid-column: 2; }
+  nav { padding: 0 16px; }
+  .page-inner { padding: 80px 16px 40px; }
+}
+@media (max-width: 480px) {
+  .features-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">
+    <img src="malice.png" alt="Malice">
+    <span>Malice</span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('home')"    id="nav-home">Home</button>
+    <button class="nav-link"        onclick="showPage('features')"id="nav-features">Features</button>
+    <button class="nav-link"        onclick="showPage('commands')"id="nav-commands">Commands</button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE: HOME
+═════════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <div class="hero-left fade-in">
+      <div class="hero-eyebrow">Devil's Den — Official Economy Bot</div>
+      <div class="hero-title">MAL<span>ICE</span></div>
+      <div class="hero-sub">Earn. Spend. Descend.</div>
+      <p class="hero-desc">
+        Malice is the official economy bot for Devil's Den. Earn currency by showing up, complete tasks, and spend it on exclusive content from Asmodeus. The deeper you go, the better it gets.
+      </p>
+      <div class="hero-btns">
+        <button class="btn-primary"   onclick="showPage('features')">How It Works</button>
+        <button class="btn-secondary" onclick="showPage('commands')">Commands</button>
+      </div>
+    </div>
+
+    <div class="hero-right fade-in">
+      <div class="currency-pill blood">
+        <img src="blood.png" alt="Blood">
+        <div class="currency-pill-info">
+          <div class="currency-pill-name">Blood</div>
+          <div class="currency-pill-desc">Everyday currency — earned from daily logins and tasks</div>
+        </div>
+      </div>
+      <div class="currency-pill hex">
+        <img src="hex.png" alt="Hex">
+        <div class="currency-pill-info">
+          <div class="currency-pill-name">Hex</div>
+          <div class="currency-pill-desc">Engagement currency — required for exclusive members-only content</div>
+        </div>
+      </div>
+      <div class="currency-pill void">
+        <img src="void.png" alt="Void">
+        <div class="currency-pill-info">
+          <div class="currency-pill-name">Void</div>
+          <div class="currency-pill-desc">Ultra-rare prestige — almost impossible to obtain</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE: FEATURES
+═════════════════════════════════════════════════════ -->
+<div class="page" id="page-features">
+  <div class="page-inner fade-in">
+
+    <div class="section-label">What Malice Does</div>
+    <div class="section-title">Features</div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon">🩸</span>
+        <div class="feature-title">Daily Ritual</div>
+        <div class="feature-desc">Claim free blood and hex every day. Keep a streak going for bonus rewards. VIP members earn double blood.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📋</span>
+        <div class="feature-title">Tasks</div>
+        <div class="feature-desc">Complete repeatable and one-time tasks to earn extra currency. React to posts, recruit souls, maintain streaks.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">😈</span>
+        <div class="feature-title">The Market</div>
+        <div class="feature-desc">Spend currency on exclusive content from Asmodeus — roasts, voice notes, photos, custom requests, and more.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <div class="feature-title">Auto Fulfillment</div>
+        <div class="feature-desc">Most items are delivered instantly the moment you purchase — no waiting, no approval needed.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎟️</span>
+        <div class="feature-title">Waitlists</div>
+        <div class="feature-desc">Sold out? Mark your place in blood. You'll be notified the moment it restocks.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔥</span>
+        <div class="feature-title">Drops</div>
+        <div class="feature-desc">Scheduled limited drops with live countdowns. The Den will know when something is coming.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">💀</span>
+        <div class="feature-title">Tier Ranking</div>
+        <div class="feature-desc">Earn your place in the Den's hierarchy. Each tier unlocks a Discord role and a one-time bonus reward.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">💌</span>
+        <div class="feature-title">Gifts</div>
+        <div class="feature-desc">Asmodeus can drop gifts directly into your inbox. Claim them when you're ready.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🖤</span>
+        <div class="feature-title">Void Summon</div>
+        <div class="feature-desc">Sacrifice 50 blood and 50 hex to summon 1 void. The rarest thing in the Den. Most will never hold it.</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-label">Ranking System</div>
+    <div class="section-title" style="margin-bottom:20px;">The Hierarchy</div>
+
+    <div class="tiers-list">
+      <div class="tier-row">
+        <div class="tier-emoji">🖤</div>
+        <div class="tier-name">Damned Elite</div>
+        <div class="tier-req">200+ points</div>
+        <div class="tier-bonus">+25 blood reward</div>
+      </div>
+      <div class="tier-row">
+        <div class="tier-emoji">🔥</div>
+        <div class="tier-name">Hell's Devoted</div>
+        <div class="tier-req">100+ points</div>
+        <div class="tier-bonus">+15 blood reward</div>
+      </div>
+      <div class="tier-row">
+        <div class="tier-emoji">🩸</div>
+        <div class="tier-name">Blood Pact</div>
+        <div class="tier-req">50+ points</div>
+        <div class="tier-bonus">+10 blood reward</div>
+      </div>
+      <div class="tier-row">
+        <div class="tier-emoji">😈</div>
+        <div class="tier-name">Corrupted</div>
+        <div class="tier-req">20+ points</div>
+        <div class="tier-bonus">+5 blood reward</div>
+      </div>
+      <div class="tier-row">
+        <div class="tier-emoji">💀</div>
+        <div class="tier-name">Fresh Meat</div>
+        <div class="tier-req">Everyone starts here</div>
+        <div class="tier-bonus">—</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-label">Prestige System</div>
+    <div class="section-title" style="margin-bottom:4px;">The Void Summon</div>
+    <p style="color:var(--soft);font-size:0.88rem;margin-bottom:0;">Void cannot be bought. It must be earned the hard way — or granted by Asmodeus herself.</p>
+
+    <div class="forge-box">
+      <div class="forge-token">
+        <img src="blood.png" alt="Blood">
+        <div class="forge-token-label">50 Blood</div>
+      </div>
+      <div class="forge-op">+</div>
+      <div class="forge-token">
+        <img src="hex.png" alt="Hex">
+        <div class="forge-token-label">50 Hex</div>
+      </div>
+      <div class="forge-op">→</div>
+      <div class="forge-token">
+        <img src="void.png" alt="Void">
+        <div class="forge-token-label">1 Void</div>
+      </div>
+    </div>
+
+  </div>
+  <footer>
+    <div class="footer-left">Malice · Devil's Den</div>
+    <div class="footer-right">Use /summon to begin</div>
+  </footer>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     PAGE: COMMANDS
+═════════════════════════════════════════════════════ -->
+<div class="page" id="page-commands">
+  <div class="page-inner fade-in">
+
+    <div class="section-label">Complete Reference</div>
+    <div class="section-title">Commands</div>
+
+    <div class="cmd-tabs">
+      <button class="cmd-tab active" onclick="showTab('earn')">Earning</button>
+      <button class="cmd-tab"        onclick="showTab('shop')">Shop</button>
+      <button class="cmd-tab"        onclick="showTab('social')">Social</button>
+      <button class="cmd-tab"        onclick="showTab('rank')">Ranking</button>
+      <button class="cmd-tab"        onclick="showTab('admin')">Admin</button>
+    </div>
+
+    <!-- EARNING -->
+    <div class="cmd-panel active" id="tab-earn">
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <div><div class="cmd-name">daily</div></div>
+          <div class="cmd-desc">
+            <strong>Claim your daily blood and hex.</strong> Resets every 24 hours. Keep your streak alive to unlock the 3-day streak bonus task. VIP members get double blood automatically.
+            <div class="cmd-note">→ Regular use: just run it once a day</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">earn</div></div>
+          <div class="cmd-desc">
+            <strong>See all available ways to earn.</strong> Shows your daily status, every task, what you've completed, and what's still on cooldown.
+            <div class="cmd-note">→ Check here first if you want more currency</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">task complete</div></div>
+          <div class="cmd-desc">
+            <strong>Complete a specific task to earn currency.</strong> Pick from the list — some reset daily, some weekly, one is one-time only. Each one tells you its cooldown.
+            <div class="cmd-note">→ Tasks: comment, share, react, streak3, firstbuy, hex5</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">balance</div></div>
+          <div class="cmd-desc">
+            <strong>Check all three of your wallets</strong> — blood, hex, and void — plus your last 10 transactions so you can see exactly where your currency came and went.
+            <div class="cmd-note">→ Only visible to you (ephemeral)</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">summon</div></div>
+          <div class="cmd-desc">
+            <strong>Sacrifice 50 blood + 50 hex to summon 1 void.</strong> Shows your current balances and a confirmation prompt before anything is deducted. Irreversible once confirmed.
+            <div class="cmd-note">→ Void is the rarest currency — almost no one in the Den holds it</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOP -->
+    <div class="cmd-panel" id="tab-shop">
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <div><div class="cmd-name">shop</div></div>
+          <div class="cmd-desc">
+            <strong>Browse everything available.</strong> SFW items are always visible. NSFW items only appear if you have the members-only role. Each item shows its price, stock remaining, and item ID.
+            <div class="cmd-note">→ Use the ID shown to buy with /buy</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">buy</div></div>
+          <div class="cmd-desc">
+            <strong>Purchase an item by its ID.</strong> Shows a confirmation with price and your balance before deducting anything. <strong>Auto items</strong> are fulfilled instantly. <strong>Manual items</strong> go to Asmodeus to deliver.
+            <div class="cmd-note">→ Example: /buy 3</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">purchases</div></div>
+          <div class="cmd-desc">
+            <strong>Your full purchase history.</strong> Shows ⚙️ for auto-fulfilled items and 📋 for manual ones still awaiting delivery.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">waitlist join</div></div>
+          <div class="cmd-desc">
+            <strong>Reserve your spot for a sold-out item.</strong> Costs 2 blood (fully refundable). You'll get a DM the moment it restocks.
+            <div class="cmd-note">→ Example: /waitlist join 5</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">waitlist leave</div></div>
+          <div class="cmd-desc">
+            <strong>Leave a waitlist and get your 2 blood back</strong> automatically. No questions asked.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">waitlist view</div></div>
+          <div class="cmd-desc">
+            <strong>See all your active waitlist positions</strong> — what you're waiting on and how many people are ahead of you.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="cmd-panel" id="tab-social">
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <div><div class="cmd-name">gift</div></div>
+          <div class="cmd-desc">
+            <strong>Send blood or hex to another soul in the Den.</strong> Void cannot be gifted — it must be summoned or granted. Subject to daily gift limits.
+            <div class="cmd-note">→ Example: /gift @user 10 blood</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">gifts view</div></div>
+          <div class="cmd-desc">
+            <strong>Check your inbox for unclaimed gifts from Asmodeus.</strong> Shows everything waiting for you with the amount, currency, and any message she left.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">gifts claim</div></div>
+          <div class="cmd-desc">
+            <strong>Claim a specific gift by its ID.</strong> Adds the currency to your wallet immediately.
+            <div class="cmd-note">→ Example: /gifts claim 3</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">gifts claimall</div></div>
+          <div class="cmd-desc">
+            <strong>Claim everything in your inbox at once.</strong> Tells you the total across all currencies claimed.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RANKING -->
+    <div class="cmd-panel" id="tab-rank">
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <div><div class="cmd-name">rank</div></div>
+          <div class="cmd-desc">
+            <strong>Check your current tier, score, and progress</strong> to the next tier. Score is calculated from total blood earned and spent — the more you participate, the higher you climb.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">leaderboard</div></div>
+          <div class="cmd-desc">
+            <strong>The top 10 most damned souls in the Den.</strong> Visible to everyone — not ephemeral. Automatically updates Discord tier roles when run.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="cmd-panel" id="tab-admin">
+      <div class="cmd-list">
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin stats<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Full Den overview.</strong> Total souls, purchases, auto vs manual order counts, currency in circulation, top-selling items, and most-waitlisted items.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin additem<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Add a new item to the market.</strong> Set name, description, price, quantity, category, emoji, tag, currency, whether it's NSFW, and whether it's auto or manual fulfillment. NSFW items always cost hex regardless of what currency you set.
+            <div class="cmd-note">→ fulfillment: auto = instant · manual = posts to requests channel</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin toggleitem<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Show or hide any item from the shop</strong> without deleting it. Useful for temporarily pulling something out of rotation.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin togglefulfillment<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Flip any item between auto and manual fulfillment</strong> at any time. If you're too busy to fulfill something manually, flip it to auto. Flip it back when you're ready.
+            <div class="cmd-note">→ Example: /admin togglefulfillment 7</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin restock<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Restock a sold-out item to a new quantity.</strong> Automatically DMs everyone on the waitlist to let them know it's back.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin gift<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Drop a gift into any user's inbox</strong> — blood, hex, or void — with an optional personal message. They claim it with /gifts view. They get a DM notification automatically.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin addbalance<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Directly add any currency to any user's wallet.</strong> No inbox, no claiming — goes in immediately. Use for corrections or manual bonuses.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin givevoid<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Grant 1 void to a user.</strong> Limited to once per admin per calendar month. The system tracks this automatically and will block a second grant until the month resets.
+            <div class="cmd-note badge-rare" style="display:inline-block;padding:2px 8px;border-radius:2px;margin-top:6px;">Rare — use with intention</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin voidstatus<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Check whether you've used your monthly void grant.</strong> Shows who you gave it to and when, or confirms it's still available.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin dropadd<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Schedule a timed drop.</strong> Set the item ID, how many units to add, and how many minutes from now. A countdown posts to the drops channel and updates every minute until it fires.
+            <div class="cmd-note">→ Requires DROPS_CH to be configured in bot.py</div>
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin droplist<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>List all scheduled and live drops</strong> with their item, quantity, scheduled time, and current status.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin dropcancel<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Cancel a scheduled drop.</strong> Updates the countdown message in the drops channel automatically to show it was cancelled.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin giftlimit<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Set the global daily gift cap</strong> — the maximum amount any user can gift to others in a single day across all currencies combined.
+          </div>
+        </div>
+        <div class="cmd-row">
+          <div><div class="cmd-name">admin setgiftlimit<span class="cmd-badge badge-admin">admin</span></div></div>
+          <div class="cmd-desc">
+            <strong>Override the gift limit for a specific user.</strong> Useful if someone is gifting excessively or if you want to give a trusted user a higher cap.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <footer>
+    <div class="footer-left">Malice · Devil's Den</div>
+    <div class="footer-right">All commands are ephemeral unless noted</div>
+  </footer>
+</div>
+
+<script>
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const page = document.getElementById('page-' + name);
+  const link = document.getElementById('nav-' + name);
+  if (page) { page.classList.add('active'); page.querySelector('.fade-in') && (page.querySelector('.fade-in').style.animation = 'none', requestAnimationFrame(() => { page.querySelector('.fade-in').style.animation = ''; })); }
+  if (link) link.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function showTab(name) {
+  document.querySelectorAll('.cmd-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.cmd-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
