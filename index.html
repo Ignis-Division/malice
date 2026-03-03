@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Malice — Devil's Den Bot</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@300;400;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:       #080608;
   --surface:  #100c10;
-  --panel:    #160f16;
-  --border:   rgba(180,20,20,0.15);
+  --panel:    rgba(16,9,16,0.85);
+  --border:   rgba(200,30,30,0.2);
   --red:      #cc2020;
-  --red2:     #ff3030;
-  --dim:      #4a2a2a;
-  --muted:    rgba(255,255,255,0.3);
-  --text:     rgba(255,255,255,0.85);
-  --soft:     rgba(255,255,255,0.45);
+  --red2:     #ff4040;
+  --dim:      rgba(240,220,240,0.32);
+  --muted:    rgba(240,220,240,0.4);
+  --text:     #f0e8f0;
+  --soft:     rgba(240,228,240,0.68);
   --blood:    #cc2020;
   --hex:      #6622cc;
   --void:     #0a0a0a;
@@ -28,23 +28,33 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.7;
   overflow-x: hidden;
   min-height: 100vh;
+}
+
+/* ── BACKGROUND IMAGE ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 85% 85% at 50% 50%, rgba(8,6,8,0.52) 0%, rgba(8,6,8,0.88) 100%),
+    url('Malicelarge.png') center center / cover no-repeat;
+  pointer-events: none;
 }
 
 /* ── GRAIN OVERLAY ── */
 body::after {
   content: '';
   position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
   pointer-events: none; z-index: 9999;
 }
 
 /* ── PAGES ── */
-.page { display: none; min-height: 100vh; }
+.page { display: none; min-height: 100vh; position: relative; z-index: 1; }
 .page.active { display: flex; flex-direction: column; }
 
 /* ── NAV ── */
@@ -54,9 +64,9 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 32px;
   height: 56px;
-  background: rgba(8,6,8,0.92);
+  background: rgba(6,2,6,0.9);
   border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
 }
 .nav-logo {
   display: flex; align-items: center; gap: 10px;
@@ -132,10 +142,10 @@ nav {
   margin-bottom: 24px;
 }
 .hero-desc {
-  font-size: 0.95rem;
-  font-weight: 300;
+  font-size: 0.98rem;
+  font-weight: 400;
   color: var(--soft);
-  line-height: 1.7;
+  line-height: 1.75;
   margin-bottom: 36px;
   max-width: 400px;
 }
@@ -182,6 +192,7 @@ nav {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 16px 20px;
+  backdrop-filter: blur(8px);
   transition: border-color 0.2s, transform 0.2s;
 }
 .currency-pill:hover { border-color: rgba(204,32,32,0.3); transform: translateX(4px); }
@@ -229,6 +240,7 @@ nav {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 24px 20px;
+  backdrop-filter: blur(8px);
   transition: border-color 0.2s, transform 0.2s;
 }
 .feature-card:hover { border-color: rgba(204,32,32,0.3); transform: translateY(-2px); }
@@ -241,10 +253,10 @@ nav {
   margin-bottom: 6px;
 }
 .feature-desc {
-  font-size: 0.82rem;
-  font-weight: 300;
+  font-size: 0.85rem;
+  font-weight: 400;
   color: var(--soft);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .tiers-list { display: flex; flex-direction: column; gap: 0; }
@@ -264,7 +276,7 @@ nav {
   letter-spacing: 0.08em;
   color: #fff;
 }
-.tier-req { font-size: 0.8rem; color: var(--soft); }
+.tier-req { font-size: 0.85rem; color: var(--soft); }
 .tier-bonus {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
@@ -309,6 +321,7 @@ nav {
   grid-template-columns: 200px 1fr;
   gap: 16px;
   align-items: start;
+  backdrop-filter: blur(8px);
   transition: border-color 0.15s;
 }
 .cmd-row:hover { border-color: rgba(204,32,32,0.25); }
@@ -317,7 +330,7 @@ nav {
   font-size: 12px;
   color: #ff6060;
 }
-.cmd-name::before { content: '/'; color: var(--dim); }
+.cmd-name::before { content: '/'; color: rgba(204,32,32,0.5); }
 .cmd-badge {
   display: inline-block;
   font-family: 'JetBrains Mono', monospace;
@@ -332,8 +345,8 @@ nav {
 .badge-admin { background: rgba(204,32,32,0.12); color: var(--red); border: 1px solid rgba(204,32,32,0.2); }
 .badge-nsfw  { background: rgba(80,0,0,0.3); color: #cc4444; border: 1px solid rgba(120,0,0,0.3); }
 .badge-rare  { background: rgba(60,10,80,0.3); color: #aa44cc; border: 1px solid rgba(80,20,100,0.4); }
-.cmd-desc { font-size: 0.85rem; color: var(--soft); line-height: 1.6; }
-.cmd-desc strong { color: var(--text); font-weight: 500; }
+.cmd-desc { font-size: 0.88rem; color: var(--soft); line-height: 1.65; }
+.cmd-desc strong { color: #fff; font-weight: 700; }
 .cmd-note {
   margin-top: 6px;
   font-family: 'JetBrains Mono', monospace;
@@ -343,7 +356,7 @@ nav {
 
 /* ── FORGE SECTION ── */
 .forge-box {
-  background: linear-gradient(135deg, #0f0810, #080608);
+  background: linear-gradient(135deg, rgba(15,8,16,0.9), rgba(8,6,8,0.9));
   border: 1px solid rgba(102,34,204,0.2);
   border-radius: 4px;
   padding: 32px;
@@ -353,6 +366,7 @@ nav {
   gap: 20px;
   flex-wrap: wrap;
   margin-top: 32px;
+  backdrop-filter: blur(8px);
 }
 .forge-token {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -385,6 +399,9 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative; z-index: 1;
+  background: rgba(6,2,6,0.5);
+  backdrop-filter: blur(12px);
 }
 .footer-left {
   font-family: 'JetBrains Mono', monospace;
@@ -514,7 +531,7 @@ footer {
         <div class="feature-desc">Most items are delivered instantly the moment you purchase — no waiting, no approval needed.</div>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">🎟️</span>
+        <span class="feature-icon"><img src="ticketb.png" alt="Waitlist" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;"></span>
         <div class="feature-title">Waitlists</div>
         <div class="feature-desc">Sold out? Mark your place in blood. You'll be notified the moment it restocks.</div>
       </div>
