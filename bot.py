@@ -1,19 +1,3 @@
-"""
-bot.py — Malice
-Asmodeus's fan economy bot for Devil's Den.
-
-Guild:    1391928616098467960
-Log:      944764052062744656
-Admins:   860562689704329236 (Asmodeus)
-          1465880892110143570 (Asmodeus alt)
-          448896936481652777 (Guy)
-
-Fulfillment
-───────────
-  auto   — purchase confirmed instantly via ephemeral, logged silently to LOG_GUILD
-  manual — purchase posts to REQUESTS_CH for Asmodeus to action via buttons
-"""
-
 import os
 import discord
 from discord import app_commands
@@ -29,21 +13,6 @@ import embeds as em
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
-
-# ── Config ────────────────────────────────────────────────────────────────────
-GUILD_ID    = 1375155577977704588
-LOG_GUILD   = 944764052062744656
-LOG_CH      = 944766955586482207   # specific channel in LOG_GUILD for purchase logs
-DROPS_CH    = 1382900600802381955
-REQUESTS_CH   = 1481377615154512033
-QUEUE_ALERT_CH = 1481377615154512033
-FULFILLMENT_LOG_CH = 1478253892306210859  # channel to announce fulfillment mode changes
-ADMIN_IDS   = {860562689704329236, 1465880892110143570, 448896936481652777, 182725383609778176}
-
-# ── Bot setup ─────────────────────────────────────────────────────────────────
-intents         = discord.Intents.default()
-intents.members = True
-
 
 class MaliceBot(discord.Client):
     def __init__(self):
