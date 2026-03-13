@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Malice — Admin Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@300;400;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #080608;
+  --surface:  #100c10;
+  --panel:    rgba(16,9,16,0.85);
+  --border:   rgba(200,30,30,0.2);
+  --red:      #cc2020;
+  --red2:     #ff4040;
+  --dim:      rgba(240,220,240,0.32);
+  --muted:    rgba(240,220,240,0.4);
+  --text:     #f0e8f0;
+  --soft:     rgba(240,228,240,0.68);
+  --blood:    #cc2020;
+  --hex:      #6622cc;
+  --void:     #0a0a0a;
+  --amber:    #cc8800;
+  --green:    #226622;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 85% 85% at 50% 50%, rgba(8,6,8,0.52) 0%, rgba(8,6,8,0.88) 100%),
+    url('Malicelarge.png') center center / cover no-repeat;
+  pointer-events: none;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+}
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+  height: 56px;
+  background: rgba(6,2,6,0.9);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; text-decoration: none;
+}
+.nav-logo img { width: 28px; height: 28px; object-fit: contain; }
+.nav-logo span {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+  color: var(--red2);
+}
+.nav-links { display: flex; gap: 4px; align-items: center; }
+.nav-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 2px;
+  border: none;
+  background: transparent;
+  color: var(--soft);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+  display: inline-flex; align-items: center;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-link.active { color: var(--red2); background: rgba(204,32,32,0.08); }
+.nav-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+  background: rgba(204,32,32,0.15);
+  color: var(--red);
+  border: 1px solid rgba(204,32,32,0.25);
+  margin-left: 8px;
+}
+
+.page-inner {
+  padding: 88px 32px 64px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  min-height: 100vh;
+  position: relative; z-index: 1;
+}
+
+.page-header {
+  margin-bottom: 40px;
+}
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: 0.06em;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.page-desc {
+  font-size: 0.9rem;
+  color: var(--soft);
+  max-width: 560px;
+}
+
+.cmd-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.cmd-tab {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cmd-tab:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+.cmd-tab.active { background: rgba(204,32,32,0.1); border-color: rgba(204,32,32,0.3); color: var(--red2); }
+
+.cmd-panel { display: none; }
+.cmd-panel.active { display: flex; flex-direction: column; gap: 8px; }
+
+.cmd-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 18px 20px;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.15s;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.cmd-card:hover { border-color: rgba(204,32,32,0.3); }
+
+.cmd-left {}
+.cmd-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #ff6060;
+  margin-bottom: 6px;
+}
+.cmd-name::before { content: '/'; color: rgba(204,32,32,0.5); }
+.cmd-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+.tag-admin   { background: rgba(204,32,32,0.12); color: #cc4444; border: 1px solid rgba(204,32,32,0.2); }
+.tag-rare    { background: rgba(60,10,80,0.3); color: #bb55dd; border: 1px solid rgba(80,20,100,0.4); }
+.tag-items   { background: rgba(20,40,80,0.3); color: #5588cc; border: 1px solid rgba(30,60,120,0.3); }
+.tag-users   { background: rgba(10,50,30,0.3); color: #44aa66; border: 1px solid rgba(15,70,40,0.3); }
+.tag-drops   { background: rgba(80,50,10,0.3); color: #cc9933; border: 1px solid rgba(100,70,15,0.3); }
+.tag-bans    { background: rgba(60,10,10,0.4); color: #cc3333; border: 1px solid rgba(100,20,20,0.4); }
+.tag-gifts   { background: rgba(60,10,60,0.3); color: #cc44cc; border: 1px solid rgba(80,20,80,0.3); }
+
+.cmd-right {}
+.cmd-desc {
+  font-size: 0.875rem;
+  color: var(--soft);
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+.cmd-desc strong { color: #fff; font-weight: 700; }
+.cmd-params {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.param-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.82rem;
+}
+.param-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #ff9060;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+.param-req {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1px 5px;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+.req { background: rgba(204,32,32,0.12); color: #cc4444; border: 1px solid rgba(204,32,32,0.2); }
+.opt { background: rgba(255,255,255,0.04); color: var(--dim); border: 1px solid rgba(255,255,255,0.08); }
+.param-desc { color: var(--dim); font-size: 0.82rem; }
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 32px 0;
+}
+
+.cmd-note {
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--dim);
+}
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative; z-index: 1;
+  background: rgba(6,2,6,0.5);
+  backdrop-filter: blur(12px);
+}
+.footer-left {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.footer-right {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--dim);
+}
+
+.fade-in { animation: fadeIn 0.4s ease both; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 720px) {
+  .cmd-card { grid-template-columns: 1fr; gap: 10px; }
+  nav { padding: 0 16px; }
+  .page-inner { padding: 80px 16px 48px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="malice.png" alt="Malice">
+    <span>Malice</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="index.html#features">Features</a>
+    <a class="nav-link" href="index.html#commands">Commands</a>
+    <a class="nav-link active" href="admin.html">Admin<span class="nav-badge">restricted</span></a>
+  </div>
+</nav>
+
+<div class="page-inner fade-in">
+
+  <div class="page-header">
+    <div class="section-label">Restricted Access</div>
+    <div class="section-title">Admin Reference</div>
+    <p class="page-desc">Full command reference for Asmodeus and authorized admins. All commands require an ID in the ADMIN_IDS whitelist in bot.py.</p>
+  </div>
+
+  <div class="cmd-tabs">
+    <button class="cmd-tab active" onclick="showTab('items', this)">Items</button>
+    <button class="cmd-tab"        onclick="showTab('users', this)">Users</button>
+    <button class="cmd-tab"        onclick="showTab('drops', this)">Drops</button>
+    <button class="cmd-tab"        onclick="showTab('bans',  this)">Bans</button>
+  </div>
+
+  <!-- ── ITEMS ── -->
+  <div class="cmd-panel active" id="tab-items">
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin additem</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-items">items</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Add a new item to the market.</strong> NSFW items always cost hex regardless of currency set. Auto fulfillment delivers instantly; manual posts to the requests channel.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">name</span><span class="param-req req">required</span><span class="param-desc">Item display name</span></div>
+          <div class="param-row"><span class="param-name">description</span><span class="param-req req">required</span><span class="param-desc">Shown in shop and purchase confirmation</span></div>
+          <div class="param-row"><span class="param-name">price</span><span class="param-req req">required</span><span class="param-desc">Cost in the selected currency</span></div>
+          <div class="param-row"><span class="param-name">quantity</span><span class="param-req req">required</span><span class="param-desc">Total stock available</span></div>
+          <div class="param-row"><span class="param-name">category</span><span class="param-req req">required</span><span class="param-desc">Used for grouping in the shop</span></div>
+          <div class="param-row"><span class="param-name">emoji</span><span class="param-req req">required</span><span class="param-desc">Displayed next to the item name</span></div>
+          <div class="param-row"><span class="param-name">tag</span><span class="param-req req">required</span><span class="param-desc">Short label shown in shop listings</span></div>
+          <div class="param-row"><span class="param-name">currency</span><span class="param-req opt">optional</span><span class="param-desc">blood / hex / void — defaults to blood</span></div>
+          <div class="param-row"><span class="param-name">nsfw</span><span class="param-req opt">optional</span><span class="param-desc">Restricts to NSFW role — forces currency to hex</span></div>
+          <div class="param-row"><span class="param-name">fulfillment</span><span class="param-req opt">optional</span><span class="param-desc">auto (default) or manual</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin edititem</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-items">items</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Edit any field of an existing item.</strong> Only pass the fields you want to change — everything else stays as-is. Setting nsfw to true automatically forces currency to hex.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">item_id</span><span class="param-req req">required</span><span class="param-desc">ID of the item to edit</span></div>
+          <div class="param-row"><span class="param-name">name</span><span class="param-req opt">optional</span></div>
+          <div class="param-row"><span class="param-name">description</span><span class="param-req opt">optional</span></div>
+          <div class="param-row"><span class="param-name">price</span><span class="param-req opt">optional</span></div>
+          <div class="param-row"><span class="param-name">emoji</span><span class="param-req opt">optional</span></div>
+          <div class="param-row"><span class="param-name">category</span><span class="param-req opt">optional</span></div>
+          <div class="param-row"><span class="param-name">tag</span><span class="param-req opt">optional</span></div>
+          <div class="param-row"><span class="param-name">currency</span><span class="param-req opt">optional</span></div>
+          <div class="param-row"><span class="param-name">fulfillment</span><span class="param-req opt">optional</span></div>
+          <div class="param-row"><span class="param-name">nsfw</span><span class="param-req opt">optional</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin toggleitem</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-items">items</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Show or hide an item from the shop</strong> without deleting it. Useful for temporarily pulling something out of rotation.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">item_id</span><span class="param-req req">required</span><span class="param-desc">ID of the item to toggle</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin togglefulfillment</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-items">items</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Flip an item between auto and manual fulfillment.</strong> Posts an announcement to the fulfillment log channel when changed. Flip to auto when you can't fulfill manually; flip back when you're ready.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">item_id</span><span class="param-req req">required</span><span class="param-desc">ID of the item to flip</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin restock</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-items">items</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Restock a sold-out item to a new quantity.</strong> Automatically DMs every soul on the waitlist so they can buy before it sells out again.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">item_id</span><span class="param-req req">required</span></div>
+          <div class="param-row"><span class="param-name">quantity</span><span class="param-req req">required</span><span class="param-desc">New stock quantity to set</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin stats</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Full Den overview.</strong> Total souls, purchases, auto vs manual order counts, currency in circulation, top-selling items, and most-waitlisted items.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── USERS ── -->
+  <div class="cmd-panel" id="tab-users">
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin balance</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-users">users</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Check any user's wallet.</strong> Shows blood, hex, and void balances plus their last 10 transactions. Ephemeral — only you see it.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">user</span><span class="param-req req">required</span><span class="param-desc">The member to inspect</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin addbalance</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-users">users</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Add currency directly to any user's wallet.</strong> No inbox, no claiming — credited immediately. Use for corrections, compensation, or manual bonuses.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">user</span><span class="param-req req">required</span></div>
+          <div class="param-row"><span class="param-name">amount</span><span class="param-req req">required</span></div>
+          <div class="param-row"><span class="param-name">currency</span><span class="param-req opt">optional</span><span class="param-desc">blood / hex / void — defaults to blood</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin gift</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-gifts">gifts</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Drop a gift into any user's inbox</strong> with an optional personal message. They claim it with /gifts view. A DM notification is sent automatically.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">user</span><span class="param-req req">required</span></div>
+          <div class="param-row"><span class="param-name">amount</span><span class="param-req req">required</span></div>
+          <div class="param-row"><span class="param-name">currency</span><span class="param-req opt">optional</span><span class="param-desc">Defaults to blood</span></div>
+          <div class="param-row"><span class="param-name">message</span><span class="param-req opt">optional</span><span class="param-desc">Personal note shown with the gift</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin award</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-users">users</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Give currency to every member with a specific role.</strong> Loops through all non-bot members with that role and credits them instantly. Ideal for monthly Patreon payouts or event rewards.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">role</span><span class="param-req req">required</span><span class="param-desc">Role to target — all members receive the award</span></div>
+          <div class="param-row"><span class="param-name">amount</span><span class="param-req req">required</span><span class="param-desc">Amount each member receives</span></div>
+          <div class="param-row"><span class="param-name">currency</span><span class="param-req opt">optional</span><span class="param-desc">Defaults to blood</span></div>
+          <div class="param-row"><span class="param-name">reason</span><span class="param-req opt">optional</span><span class="param-desc">Shown in each user's transaction history</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin givevoid</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-rare">rare</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Grant 1 void to a user.</strong> Limited to once per admin per calendar month — the system tracks and blocks a second grant automatically. The recipient gets a DM.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">user</span><span class="param-req req">required</span><span class="param-desc">Soul to receive the void</span></div>
+        </div>
+        <div class="cmd-note">→ Use with intention — void is the rarest thing in the Den</div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin voidstatus</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-rare">rare</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Check if you've used your monthly void grant.</strong> Shows who you gave it to and when, or confirms it's still available this month.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin giftlimit</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-gifts">gifts</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Set the global daily gift cap</strong> — the maximum any user can gift to others in a single day across all currencies combined.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">limit</span><span class="param-req req">required</span><span class="param-desc">Max daily gift amount per user</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin setgiftlimit</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-gifts">gifts</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Override the gift limit for a specific user.</strong> Use to restrict someone who is gifting excessively, or to give a trusted user a higher cap than the global default.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">user</span><span class="param-req req">required</span></div>
+          <div class="param-row"><span class="param-name">limit</span><span class="param-req req">required</span><span class="param-desc">Their personal daily gift cap</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── DROPS ── -->
+  <div class="cmd-panel" id="tab-drops">
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin dropadd</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-drops">drops</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Schedule a timed drop.</strong> A live countdown posts to the drops channel and updates every minute until the drop fires and restocks the item. Waitlisted souls are notified automatically.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">item_id</span><span class="param-req req">required</span><span class="param-desc">Item to restock when the drop fires</span></div>
+          <div class="param-row"><span class="param-name">quantity</span><span class="param-req req">required</span><span class="param-desc">Units to add on drop</span></div>
+          <div class="param-row"><span class="param-name">minutes</span><span class="param-req req">required</span><span class="param-desc">How many minutes from now to drop</span></div>
+        </div>
+        <div class="cmd-note">→ Requires DROPS_CH to be set in bot.py</div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin droplist</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-drops">drops</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>List all scheduled and live drops</strong> with item name, quantity, scheduled time, and current status.</div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin dropcancel</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-drops">drops</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Cancel a scheduled drop by its ID.</strong> Automatically edits the countdown message in the drops channel to show it was cancelled.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">drop_id</span><span class="param-req req">required</span><span class="param-desc">ID shown in /admin droplist</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── BANS ── -->
+  <div class="cmd-panel" id="tab-bans">
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin ban</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-bans">bans</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Ban a user from the bot or a specific command.</strong> Leave the command field blank for a full bot ban. Admins cannot be banned.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">user</span><span class="param-req req">required</span></div>
+          <div class="param-row"><span class="param-name">command</span><span class="param-req opt">optional</span><span class="param-desc">Omit for full ban — or pick a specific command</span></div>
+          <div class="param-row"><span class="param-name">reason</span><span class="param-req opt">optional</span><span class="param-desc">Stored and shown in /admin banlist</span></div>
+        </div>
+        <div class="cmd-note">→ Bannable commands: daily, balance, earn, shop, buy, summon, task, purchases, gift, gifts, waitlist, rank, leaderboard</div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin unban</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-bans">bans</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>Lift a ban from a user.</strong> Leave the command field blank to lift a full bot ban, or specify the command ban to remove individually.</div>
+        <div class="cmd-params">
+          <div class="param-row"><span class="param-name">user</span><span class="param-req req">required</span></div>
+          <div class="param-row"><span class="param-name">command</span><span class="param-req opt">optional</span><span class="param-desc">Omit to lift full ban</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-card">
+      <div class="cmd-left">
+        <div class="cmd-name">admin banlist</div>
+        <div class="cmd-tags">
+          <span class="tag tag-admin">admin</span>
+          <span class="tag tag-bans">bans</span>
+        </div>
+      </div>
+      <div class="cmd-right">
+        <div class="cmd-desc"><strong>View all active bans.</strong> Grouped by full bot bans and command-specific bans. Shows username, ban reason, and which command is restricted.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-left">Malice · Admin Reference</div>
+  <div class="footer-right">Restricted — ADMIN_IDS only</div>
+</footer>
+
+<script>
+function showTab(name, el) {
+  document.querySelectorAll('.cmd-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.cmd-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
